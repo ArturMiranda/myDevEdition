@@ -1,0 +1,37 @@
+<aura:component implements="flexipage:availableForAllPageTypes,force:lightningQuickAction,flexipage:availableForRecordHome,force:hasRecordId">
+
+    <aura:attribute name="newAccount" type="Object"/>
+    <aura:attribute name="simpleNewAccount" type="Object"/>
+    <aura:attribute name="newAccountError" type="String"/>
+   
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <force:recordData aura:id="AccountRecordCreator" 
+                      fields="Name,Industry,Phone,BillingCity"
+                      targetRecord="{!v.newAccount}"
+                      targetFields="{!v.simpleNewAccount}"
+                      targetError="{!v.newAccountError}" />
+                      
+    <!-- Display the new Account form -->
+    <div class="Create Account">
+        <lightning:card iconName="action:new_Account" title="Create Account">
+            <div class="slds-p-horizontal--small">
+                <lightning:input aura:id="AccountField" label="Name" value="{!v.simpleNewAccount.Name}" required="true"/>
+                <lightning:input aura:id="AccountField" label="Industry" value="{!v.simpleNewAccount.Industry}" />
+                <lightning:input aura:id="AccountField" label="Phone" value="{!v.simpleNewAccount.Phone}"/>
+                <lightning:input aura:id="AccountField" label="BillingCity" value="{!v.simpleNewAccount.BillingCity}"/>
+                <br/>
+                <lightning:button label="Save Account" variant="brand" onclick="{!c.handleSaveAccount}"/>
+                <lightning:button variant="destructive-text" label="Throw Exceptions" title="Throw Exceptions" onclick="{! c.throwExceptions }"/>
+                <lightning:button variant="destructive" label="Data Toast" title="Data Toast" onclick="{! c.dataToast }"/>
+            </div>
+        </lightning:card>
+    </div>
+
+    <!-- Display Lightning Data Service errors -->
+    <aura:if isTrue="{!not(empty(v.newAccountError))}">
+        <div class="recordError">
+            {!v.newAccountError}</div>
+    </aura:if>
+
+</aura:component>
