@@ -1,4 +1,4 @@
-<aura:component implements="flexipage:availableForAllPageTypes,force:lightningQuickAction,flexipage:availableForRecordHome,force:hasRecordId">
+<aura:component controller="CreateAccountController" implements="flexipage:availableForAllPageTypes,force:lightningQuickAction,flexipage:availableForRecordHome,force:hasRecordId">
 
     <aura:attribute name="newAccount" type="Object"/>
     <aura:attribute name="simpleNewAccount" type="Object"/>
@@ -22,8 +22,6 @@
                 <lightning:input aura:id="AccountField" label="BillingCity" value="{!v.simpleNewAccount.BillingCity}"/>
                 <br/>
                 <lightning:button label="Save Account" variant="brand" onclick="{!c.handleSaveAccount}"/>
-                <lightning:button variant="destructive-text" label="Throw Exceptions" title="Throw Exceptions" onclick="{! c.throwExceptions }"/>
-                <lightning:button variant="destructive" label="Data Toast" title="Data Toast" onclick="{! c.dataToast }"/>
             </div>
         </lightning:card>
     </div>

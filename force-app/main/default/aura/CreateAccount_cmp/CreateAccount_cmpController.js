@@ -1,5 +1,7 @@
 ({
     doInit: function(component, event, helper) {
+        console.log(':: Running doInit');
+
         // Prepare a new record from template
         component.find("AccountRecordCreator").getNewRecord(
             "Account", // sObject type (objectApiName)
@@ -18,17 +20,13 @@
     },
 
     handleSaveAccount: function(component, event, helper) {
+        console.log(':: Running handleSaveAccount');
+
         if(helper.validateAccountForm(component)) {
             component.set("v.simpleNewAccount.AccountId", component.get("v.recordId"));
             component.find("AccountRecordCreator").saveRecord(function(saveResult) {
                 if (saveResult.state === "SUCCESS" || saveResult.state === "DRAFT") {
-                    // record is saved successfully
-                    var resultsToast = $A.get("e.force:showToast");
-                    resultsToast.setParams({
-                        "title": "Saved",
-                        "message": "The record was saved."
-                    });
-                    resultsToast.fire();
+                    helper.successToast(component, "The record was saved.");
 					helper.closePanel(component);
                 } else if (saveResult.state === "INCOMPLETE") {
                     // handle the incomplete state
@@ -41,31 +39,6 @@
                 }
             });
         }
-    },
-    
-    throwExceptions : function(component, event, helper) {
-        // record is saved successfully
-        var resultsToast = $A.get("e.force:showToast");
-        resultsToast.setParams({
-            "title": "Exceptions",
-            "message": "Quase lá...",
-            "type": "warning"
-        });
-        resultsToast.fire();
-    },
-    
-    dataToast : function(component, event, helper) {
-        var toastEvent = $A.get("e.force:showToast");
-        toastEvent.setParams({
-            mode: 'sticky',
-            message: 'This is a required message',
-            messageTemplate: 'Record {0} created! See it {1}!',
-            messageTemplateData: ['Salesforce', {
-                url: 'http://www.salesforce.com/',
-                label: 'here',
-                }
-            ]
-        });
-        toastEvent.fire();
     }
+ 
 })

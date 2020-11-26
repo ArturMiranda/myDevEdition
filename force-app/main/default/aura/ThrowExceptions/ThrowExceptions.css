@@ -1,0 +1,4 @@
+.THIS .button {
+	margin: 4px;
+	min-inline-size: -webkit-fill-available;
+}

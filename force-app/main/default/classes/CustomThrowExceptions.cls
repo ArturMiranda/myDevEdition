@@ -1,6 +1,6 @@
 public with sharing class CustomThrowExceptions {
     
-    public static void insertMerchandise() {
+    public static void getCustomException() {
         try {
             // Insert Account without required fields
             Account acc = new Account();
@@ -9,7 +9,8 @@ public with sharing class CustomThrowExceptions {
             // Something happened that prevents the insertion
             // of Employee custom objects, so throw a more
             // specific exception.
-            System.debug('DmlException caught: ' + e.getMessage());    
+            System.debug('DmlException caught: ' + e.getMessage());
+            // Call my custom handler exception class    
             CustomErrorHandler.catchException('Error: Account item could not be inserted.', e);
             throw new CustomException('Account item could not be inserted.', e);
         } catch(SObjectException e) {
@@ -19,12 +20,13 @@ public with sharing class CustomThrowExceptions {
         }
     }
 
-    public static void nullException(){
+    public static void nullPointerException(){
         try {
             String s;
             Boolean b = s.contains('abc'); // Causes a NullPointerException
         } catch(NullPointerException npe) {
             System.debug('The following exception has occurred: ' + npe.getMessage());
+            // Call my custom handler exception class
             CustomErrorHandler.catchException('Error: NullPointerException...', npe);
         }
     }
@@ -44,27 +46,30 @@ public with sharing class CustomThrowExceptions {
             Account m = [SELECT Name FROM Account WHERE Name = 'XYZ' LIMIT 1];
         } catch(QueryException qe) {
             System.debug('The following exception has occurred: ' + qe.getMessage());
+            // Call my custom handler exception class
             CustomErrorHandler.catchException('Error: QueryException...', qe);    
         }
     }
 
-    public static void queryUpdate(){
+    public static void dmlException(){
         try {
             List<Account> lm = [SELECT Name FROM Account Order by CreatedDate DESC LIMIT 1];
 
             update new Account(Id=lm.get(0).Id, Name=null );
         } catch(DmlException de) {
             System.debug('The following exception has occurred: ' + de.getMessage());
+            // Call my custom handler exception class
             CustomErrorHandler.catchException('Error: DmlException...', de);    
         } catch(Exception e) {
-            System.debug('Exception caught: ' + e.getMessage()); 
+            System.debug('Exception caught: ' + e.getMessage());
+            // Call my custom handler exception class 
             CustomErrorHandler.catchException('Error: Exception...', e);       
         }
     }
 
-    public static void mainProcessing() {
+    public static void customException() {
         try {
-            insertMerchandise();
+            getCustomException();
         } catch(CustomException err) {
             System.debug(':: Message: ' + err.getMessage());    
             System.debug(':: Cause: ' + err.getCause());    

@@ -1,0 +1,35 @@
+<aura:component controller="ThrowExceptionsController" implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction" access="global" >
+	
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <div class="slds-p-horizontal--small">
+        <p class="slds-p-horizontal_small">
+            <lightning:button class="button" variant="success" name="success" label="Success" title="Success" onclick="{!c.success}"/>
+        </p>
+        <hr style="margin:5px"/>
+        <p class="slds-p-horizontal_small">
+            <lightning:button class="button" variant="brand" name="Neutral" label="Insert Account" title="Neutral" onclick="{!c.complexHandler}"/>
+            <br/>
+            Try to Insert Account record with required field missing and throw an exception.
+        </p>
+        <hr style="margin:5px"/>
+        <p class="slds-p-horizontal_small">
+            <lightning:button class="button" variant="brand" name="DmlException" label="Dml Exception" title="Dml Exception" onclick="{!c.complexHandler}"/>
+            <br/>
+            Try to Update Account record with required field missing and throw an exception.
+        </p>
+        <hr style="margin:5px"/>
+        <p class="slds-p-horizontal_small">
+            <lightning:button class="button" variant="brand" name="QueryException" label="Query Exception" title="Query Exception" onclick="{! c.complexHandler }"/>
+            <br/>
+            Try to Select Accounts records, but no records were found.
+        </p>
+        <hr style="margin:5px"/>
+        <p class="slds-p-horizontal_small">
+            <lightning:button class="button" variant="brand" name="NullPointerException" label="Null Pointer Exception" title="Null Pointer Exception" onclick="{! c.complexHandler }"/>
+            <br/>
+            Try to perform an action, but there is a null reference string.
+        </p>
+    </div>
+	
+</aura:component>

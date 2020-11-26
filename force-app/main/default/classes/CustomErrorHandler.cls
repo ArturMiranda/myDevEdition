@@ -1,10 +1,17 @@
 public with sharing class CustomErrorHandler {
     private static final List<String> ERRORS_TYPES = new List<String>{'REQUIRED_FIELD_MISSING'};
+    private static final String UPDATE_FAILED = 'Update failed';
+    // Message exceptions delimiters
+    public static Map<String, String> substringTypesMap = new Map<String, String>();
+    static {
+        substringTypesMap.put(',', ', ');
+        substringTypesMap.put(';', '; ');
+    }
 
     public class ErrorInterface {
-        String type;
-        String message;
-        String recordId;
+        public String type ;
+        public String message;
+        public String recordId;
     }
     public static List<ErrorInterface> errInterfaceList = new List<ErrorInterface>();
 
@@ -12,38 +19,35 @@ public with sharing class CustomErrorHandler {
         System.debug('<<< Running CustomErrorHandler >>> ');
         
         handleMansage(ex);
-        System.debug(':: Interface: '+ JSON.serialize(errInterfaceList));
     }
 
     private static void handleMansage(Exception ex){
         String typeException = ex.getTypeName();
         String message = ex.getMessage();
-        Id recordId;
         ErrorInterface errInterface = new ErrorInterface();
-        
+        Id recordId;
+
         errInterface.type = typeException;
         System.debug(':: Type: ' + typeException);    
-        System.debug(':: message: ' + message);    
         
+        // Get the info according to the type of the exception
         if(typeException.equals('System.DmlException')){
-            System.debug(':: REQUIRED_FIELD_MISSING');
-            if(message.contains('Update failed')){
-                recordId = message.substringBetween('id ','; ');
+            if(message.contains(UPDATE_FAILED)){// Get the record Id
+                recordId = message.substringBetween('id ', substringTypesMap.get(';'));
             }
-            errInterface.message = message.substringAfter(', ');
+            errInterface.message = message.substringAfter(substringTypesMap.get(','));
         } else if( typeException.equals('System.NullPointerException') ) {
-            System.debug(':: NULL REFERENCE ERROR');
             errInterface.message = message;    
         } else if(typeException.equals('System.QueryException') ){
-            System.debug(':: Query Exception  ERROR');
             errInterface.message = message;    
         }
  
+        // Check for Id record in exception
         if (!String.isEmpty(recordId)) {
-            System.debug(':: [['+recordId+']]');
             errInterface.recordId = recordId;    
         }
 
+        // Add exceptions records in list interface
         errInterfaceList.add(errInterface);
     }
 }
