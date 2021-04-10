@@ -32,7 +32,7 @@ private class ExtractRecordsTest {
         fReq.email = 'my.user.test@yopmail.com';
         fReq.accountId = myAccount.Id;
         List<ExtractRecords.FlowResult> fResult =  new List<ExtractRecords.FlowResult>();
-        fResult = ExtractRecords.ExtractRecords(new List<ExtractRecords.FlowRequest>{fReq} );
+        fResult = ExtractRecords.doExtractRecords(new List<ExtractRecords.FlowRequest>{fReq} );
 
         System.assertEquals('OK', fResult.get(0).status, 'The test failed.');
     }
@@ -43,7 +43,7 @@ private class ExtractRecordsTest {
         
         // Call without set FlowRequest
         List<ExtractRecords.FlowResult> fResult =  new List<ExtractRecords.FlowResult>();
-        fResult = ExtractRecords.extractRecords(new List<ExtractRecords.FlowRequest>{} );
+        fResult = ExtractRecords.doExtractRecords(new List<ExtractRecords.FlowRequest>{} );
         System.assertEquals('KO', fResult.get(0).status, 'The expected result is different the return.');
     }
 }
