@@ -1,7 +1,7 @@
 public with sharing class ExtractRecords {
 
     @InvocableMethod(label='ExtractRecords' description='Extract records')
-    public static List<FlowResult> extractRecords(List<FlowRequest> fRequest){
+    public static List<FlowResult> doExtractRecords(List<FlowRequest> fRequest){
 
         FlowResult fResult = new FlowResult();
         try {
@@ -33,17 +33,48 @@ public with sharing class ExtractRecords {
     }
 
     private static String getStringRecords(Id accountId){
-        String header = 'Name, Account, StageName, Amount, ExpectedRevenue, FiscalYear,  LeadSource,  CloseDate \n';
-        String recordsStr = '' ;
-
-        List<Opportunity> oppList = [SELECT Id, Name, Account.Name, StageName, Amount, ExpectedRevenue, FiscalYear,  LeadSource,  CloseDate FROM Opportunity  WHERE AccountId =: accountId];
-
-        for(Opportunity opp: oppList) {
-            String recordString = '"'+opp.Name+'","'+opp.Account.Name+'","'+opp.StageName+'","'+opp.Amount+'","'+opp.ExpectedRevenue+'","'+opp.FiscalYear+'","'+opp.LeadSource+'","'+opp.CloseDate +'"\n';
-            recordsStr = recordsStr + recordString;
+        List<Opportunity_Query_Mapping__mdt> oppFields = Opportunity_Query_Mapping__mdt.getall().values();
+        Map<Integer, String> headerMap = new Map<Integer, String>();
+        Map<Integer, String> flieldMap = new Map<Integer, String>();
+        List<Integer> fieldOrder = new List<Integer>();
+        for(Opportunity_Query_Mapping__mdt f : oppFields){
+            if(f.Active__c){
+                headerMap.put(Integer.ValueOf(f.Index__c), f.Name__c);
+                flieldMap.put(Integer.ValueOf(f.Index__c), f.API_Name__c);
+                fieldOrder.add(Integer.ValueOf(f.Index__c));
+            }
         }
 
-        return header + recordsStr;
+        fieldOrder.sort();
+
+        List<String> headerList = new List<String>();
+        List<String> flieldList = new List<String>();
+        for(Integer i : fieldOrder){
+            headerList.add(headerMap.get(i));
+            flieldList.add(flieldMap.get(i));
+        }
+
+        String soqlQuery = 'SELECT '+ flieldList.toString().remove('(').remove(')') +' FROM Opportunity WHERE AccountId = \''+ accountId + '\'';
+        String header = headerList.toString().remove('(').remove(')');
+        List<SObject> objectList = Database.query(soqlQuery);
+
+        String recordsLinesStr = '';
+        for(SObject sobj: objectList) {
+            String recordString = '';
+            for(String field: flieldList) {
+                if(field.contains('.')){
+                    String[] parts = field.split('\\.',0);
+                    recordString += '"'+sobj.getSObject(parts[0]).get(parts[1])+'",';
+                } else {
+                    recordString += '"'+sobj.get(field)+'",';
+                }
+            }
+            recordsLinesStr += recordString.removeEnd(',') + '\n';
+        }
+        
+        String csvRecords = header +'\n'+ recordsLinesStr;
+
+        return csvRecords;
     }
 
     private static void send(String emailRecipient, String strRecords){
